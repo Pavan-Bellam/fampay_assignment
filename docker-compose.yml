@@ -1,0 +1,40 @@
+services:
+  youtube_restapi:
+    build:
+      context: .
+      args:
+        - DEV="true"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./youtube_restapi/:/usr/src/app/
+    command: >
+      sh -c "
+            python manage.py makemigrations
+            python manage.py migrate
+             python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+
+  celery:
+    build: .
+    command: celery -A youtube_restapi worker -l info
+    volumes:
+      - ./youtube_restapi/:/usr/src/app/
+    environment:
+      - DEBUG=1
+    depends_on:
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A youtube_restapi.celery beat -l info
+    volumes:
+      - ./youtube_restapi/:/usr/src/app/
+    environment:
+      - DEBUG=1
+    depends_on:
+      - redis
+    
