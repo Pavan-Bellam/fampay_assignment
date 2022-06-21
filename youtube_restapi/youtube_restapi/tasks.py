@@ -13,7 +13,7 @@ logger = get_task_logger(__name__)
 
 @shared_task
 def update():
-    from app.models import Videos,test
+    from app.models import Videos
     from app.find import search
     response = search(SEARCH_QUERY, CHECK_INTV, 50)
     logger.info("Successfully Fetched Videos")
@@ -46,6 +46,5 @@ def update():
             #print("passed")
             pass
     logger.info("Successfully Updated Videos DB")
-    b=test(tit="title")
 
 
